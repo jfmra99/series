@@ -25,13 +25,13 @@ library(dplyr)
 
 getwd() #CHECKEAR QUE EL DIRECTORIO SEA EL DONDE ESTA EL ARCHIVO
 
-files_names= list.files(pattern="*.csv", path =  paste(getwd(),"/Data",sep=""))
-path <- paste(getwd(),"/Data/",files_names[-6],sep="")
+files_names= list.files(pattern="*.csv", path =  paste(getwd(),"/datasets/datos_originales",sep=""))
+path <- paste(getwd(),"/datasets/datos_originales/",files_names[-6],sep="")
 df <- do.call(rbind, lapply(path, function(x) read.csv(x, stringsAsFactors = FALSE,encoding = "UTF-8", ) )) ##se leen y se juntas las 5 bases de datos usando los nombres de los archivos.
 
 #La base de datos del 2019 tiene una columna extra, ha de leerse aparte
 #Contiene datos hasta Junio
-df_2019 <- read.csv(paste(getwd(),"/Data/",files_names[6],sep=""), header=T,
+df_2019 <- read.csv(paste(getwd(),"/datasets/datos_originales/",files_names[6],sep=""), header=T,
                  encoding="UTF-8")
 ```
 
@@ -77,6 +77,11 @@ plot.ts(ts_mes, ylab="Numero de Accidentes",
 
 #Componente estacional:
 plot(diff(ts_mes))
+
+
+plot(decompose(ts_mes,type="additive"))
+plot(decompose(ts_mes,type="multiplicative"))
+
 ```
 
 
@@ -103,6 +108,8 @@ plot.ts(ts_semanal, ylab="Numero de Accidentes",
 plot(decompose(ts_semanal,type="additive"))
 
 plot(diff(ts_semanal))
+
+boxplot((ts_semanal) ~ cycle((ts_semanal)))
 ```
 
 ## Agrupamiento por dia
@@ -126,5 +133,16 @@ plot.ts(ts_dia[1:365], ylab="Numero de Accidentes",
 
 plot.ts(ts_dia[366:(2*365)], ylab="Numero de Accidentes", 
      main="Accidentes diarios en Medellín 2015")
+
+
+plot(decompose(ts_dia))
+```
+
+###Guardando las bases de datos
+```{r}
+write.csv(df_mes, "datasets/Accidentalidad_mensual.csv", row.names=F)
+write.csv(df_sem, "datasets/Accidentalidad_semanal.csv", row.names=F)
+write.csv(df_dia, "datasets/Accidentalidad_diaria.csv", row.names=F)
+write.csv(df_accidentes, "datasets/Base_completa.csv", row.names=F)
 ```
 

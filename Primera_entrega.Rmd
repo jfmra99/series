@@ -1,0 +1,54 @@
+---
+title: "Primera entrega: Accidentalidad en Medellín 2014-2019"
+author: 
+- "Juan Felipe Múnera Vergara."
+- "Juan Pablo González Arenas."
+output: 
+  pdf_document:
+    latex_engine: xelatex
+sansfont: Calibri Light
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=F}
+library(dplyr)
+```
+
+## Conjunto de datos:
+La base de datos se obtiene del portal web [\underline{GeoMedellín}](https://geomedellin-m-medellin.opendata.arcgis.com/search?tags=movilidad) de la alcaldía de Medellín, en su sección de datos abiertos de movilidad. Los datos son los de *Accidentalidad Georeferenciada* entre los años de 2014 a 2019. Del presente año solo se cuentan con datos hasta el mes de Junio.
+
+
+La base de datos contiene los accidentes de tránsito registrados por la Secretaría de movilidad. A cada accidente le corresponde un registro individual en la base de datos, con lo que para realizar la serie de tiempo se ha de realizar el conteo de la cantidad de accidentes en el rango de tiempo que convenga.
+
+Por ello se decide que se va a trabajar con los accidentes únicamente del área Urbana de Medellín, lo que conrresponde a los accidentes ocurridos en las 16 comunas, con lo que se excluyen los acontecidos en los corregimientos.
+
+Se decide agrupar la cantidad de accidentes por **meses**, de manera que la base de datos tendrá 66 registros, desde Enero del 2014 hasta Junio del 2019.
+
+## Gráfico de la serie de tiempo
+
+```{r, echo=F}
+df_mes <- read.csv(paste(getwd(),"/datasets/Accidentalidad_mensual.csv",sep=""), header=T,encoding="UTF-8")
+ts_mes <- ts(df_mes$accidentes, start=c(2014,1),frequency=12)
+
+plot.ts(ts_mes, ylab="Número de Accidentes", main=NULL)
+
+plot.ts(log(ts_mes), ylab="Número de Accidentes", main=NULL)
+
+```
+
+## Descomposición aditiva de la serie de tiempo
+
+```{r, echo=F}
+plot(decompose(ts_mes,type="additive"), ann = FALSE)
+```
+
+
+```{r}
+boxplot(log(ts_mes) ~ cycle(log(ts_mes)),names=month.abb)
+
+```
+
+
